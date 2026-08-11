@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+
+# onnxruntime-web WASM wird beim postinstall aus der npm-Dependency kopiert (~55 MB).
+public/ort/

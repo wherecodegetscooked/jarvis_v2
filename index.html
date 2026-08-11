@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101211" />
+    <title>Jarvis</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="identity">
+          <span class="mark" aria-hidden="true"></span>
+          <span>Jarvis</span>
+        </div>
+        <span id="connectionLabel" class="connection">Offline</span>
+      </header>
+
+      <section class="workspace" aria-labelledby="stateTitle">
+        <div id="presence" class="presence" data-state="offline" aria-hidden="true">
+          <div class="presence-core"></div>
+          <div class="presence-ring"></div>
+        </div>
+
+        <div class="state-copy">
+          <p id="eyebrow" class="eyebrow">Voice satellite</p>
+          <h1 id="stateTitle">Ready to configure</h1>
+          <p id="stateDetail" class="state-detail">Add your service keys, then arm this device.</p>
+        </div>
+
+        <button id="primaryButton" class="primary" type="button">Arm microphone</button>
+        <button id="stopButton" class="secondary" type="button" hidden>End conversation</button>
+      </section>
+
+      <section class="device-strip" aria-label="Device and timing status">
+        <div>
+          <span class="label">Wake phrase</span>
+          <strong>Hey Jarvis</strong>
+        </div>
+        <div>
+          <span class="label">Input</span>
+          <strong id="inputLabel">System default</strong>
+        </div>
+        <div>
+          <span class="label">First audio</span>
+          <strong id="latencyLabel">Not measured</strong>
+        </div>
+      </section>
+
+      <p id="errorMessage" class="error" role="alert" hidden></p>
+      <audio id="remoteAudio" autoplay></audio>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
