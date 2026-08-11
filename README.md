@@ -1,30 +1,30 @@
 # Jarvis Voice Satellite
 
-A portable first slice of Jarvis: arm a device once, say “Jarvis”, and enter an interruptible speech-to-speech conversation. The same browser client is intended for macOS, Android tablets, and Raspberry Pi Chromium.
+A portable first slice of Jarvis: arm a device once, say “Hey Jarvis”, and enter an interruptible speech-to-speech conversation. The same browser client is intended for macOS, Android tablets, and Raspberry Pi Chromium.
 
 ## Architecture
 
 - The browser owns microphone capture, speaker playback, local wake-word detection, and WebRTC media.
 - The Node service serves the client and relays session setup so the OpenAI key never reaches the browser.
-- Porcupine processes “Jarvis” locally. Conversation audio is sent to OpenAI only after activation.
+- openWakeWord (its pretrained `hey_jarvis` model) runs locally in the browser via onnxruntime-web. Conversation audio is sent to OpenAI only after activation. No wake-word account or key is needed.
 - Tailscale Serve provides private HTTPS when the client and server are different devices.
 
 ## Run on the server
 
-Requirements: Node.js 22 or newer and accounts for the OpenAI API and Picovoice Console.
+Requirements: Node.js 22 or newer and an OpenAI API account. `npm install` downloads the wake-word models and copies the onnxruntime-web runtime (needs network access once).
 
 ```bash
 npm install
 cp .env.example .env
 ```
 
-Add `OPENAI_API_KEY` and `PICOVOICE_ACCESS_KEY` to `.env`, then run:
+Add `OPENAI_API_KEY` to `.env` (the only required secret), then run:
 
 ```bash
 npm run dev
 ```
 
-On the same computer, open `http://localhost:3000`. Select **Arm microphone**, grant access, and say “Jarvis”. **Start now** bypasses wake detection when debugging.
+On the same computer, open `http://localhost:3000`. Select **Arm microphone**, grant access, and say “Hey Jarvis”. **Start now** bypasses wake detection when debugging.
 
 ## Use the Samsung tablet
 

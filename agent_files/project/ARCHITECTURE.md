@@ -17,7 +17,7 @@ On a macOS computer, the user says “Hey Jarvis” and enters a natural, low-la
 The first vertical slice uses a portable hub-and-satellite shape:
 
 1. **Voice satellite web client** — runs in a supported browser on macOS, Android, or Raspberry Pi Chromium. It owns microphone capture, speaker playback, device state, and timing measurements.
-2. **Wake-word boundary** — Picovoice Porcupine detects the built-in “Jarvis” keyword locally in the satellite. Wake audio is not sent to the conversation provider.
+2. **Wake-word boundary** — openWakeWord (its pretrained `hey_jarvis` model, run in-browser via onnxruntime-web) detects “Hey Jarvis” locally in the satellite. The engine is vendored under `src/wake/`; models and the ORT runtime are served same-origin from `public/models` and `public/ort`. Wake audio is not sent to the conversation provider. No client-side wake credential is required. See ADR-008.
 3. **Audio session** — browser media APIs capture microphone audio with echo cancellation and play remote audio. The wake recorder and conversation recorder do not run concurrently.
 4. **Realtime conversation adapter** — the satellite uses WebRTC to connect to OpenAI Realtime. Server VAD provides turn detection and WebRTC provides automatic interruption/truncation behavior.
 5. **Hub service** — a small Node service serves the client and relays SDP session setup. The OpenAI API key remains server-side.

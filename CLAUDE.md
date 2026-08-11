@@ -31,7 +31,7 @@ These files are the durable source of truth. Do not silently reverse an accepted
 The repository contains a thin portable voice-satellite implementation, not a generalized assistant platform.
 
 - Browser client: TypeScript in `src/main.ts`, with the device UI in `index.html` and `src/styles.css`
-- Local wake word: Picovoice Porcupine, built-in “Jarvis” model
+- Local wake word: openWakeWord `hey_jarvis` model, run in-browser via onnxruntime-web (engine vendored under `src/wake/`). Replaced Picovoice Porcupine after its free tier ended — see ADR-008.
 - Active conversation: OpenAI Realtime over WebRTC
 - Hub: Node/Express service in `server.mjs`
 - Realtime configuration: `server-config.mjs`
@@ -48,7 +48,7 @@ Supported targets are modern browsers on macOS, Android, and Raspberry Pi Chromi
 - The wake recorder and realtime conversation recorder must not own the microphone concurrently.
 - Ending or failing a conversation must stop media tracks, close the peer connection, release audio resources, and re-arm wake detection when possible.
 - Keep `OPENAI_API_KEY` server-side. Never return it from `/api/config`, include it in client code, log it, or commit it.
-- Picovoice’s browser SDK necessarily receives `PICOVOICE_ACCESS_KEY`; restrict access to the client through the private deployment boundary.
+- Wake detection is fully local and keyless (openWakeWord via onnxruntime-web). Its ONNX models and the ORT runtime must be served same-origin and ahead of the Vite middleware (`server.mjs`); otherwise Vite rewrites ORT's dynamically imported `.mjs` glue and ORT fails with "no available backend".
 - Remote browser microphone access requires private HTTPS. Tailscale Serve is the selected V1 boundary. Do not expose the session endpoint through Tailscale Funnel or an unauthenticated public tunnel.
 - Keep provider-specific behavior narrow. Do not create a plugin framework before a second implementation or measured need exists.
 - Do not add memory, tools, smart-home integrations, proactive behavior, or broad orchestration until the core voice loop meets its acceptance criteria unless the user explicitly reprioritizes.
@@ -67,10 +67,9 @@ Required local configuration:
 
 ```dotenv
 OPENAI_API_KEY=...
-PICOVOICE_ACCESS_KEY=...
 ```
 
-Do not ask the user to paste secrets into chat or commit them. Direct them to edit `.env` locally.
+`OPENAI_API_KEY` is the only required secret; wake detection needs no key. Do not ask the user to paste secrets into chat or commit them. Direct them to edit `.env` locally.
 
 Validation commands:
 
@@ -90,12 +89,7 @@ Open the HTTPS URL reported by Tailscale in current Chrome on the Tab S4.
 
 ## Dependency Discipline
 
-Picovoice packages are intentionally pinned to published versions because a previous invalid version prevented installation:
-
-- `@picovoice/porcupine-web`: `4.0.1`
-- `@picovoice/web-voice-processor`: `4.0.10`
-
-Do not change these versions without checking the npm registry, reading the upstream migration notes, and running the real wake path. Porcupine 4 uses the cross-origin isolation headers set in `server.mjs`; preserve them unless verified unnecessary.
+Wake detection uses `onnxruntime-web` (pinned to `1.23.2`, matching the vendored engine) plus the openWakeWord engine vendored under `src/wake/WakeWordEngine.js` (do not swap it for a runtime git dependency). `scripts/prepare-assets.mjs` downloads the ONNX models into `public/models/` and copies the ORT WASM/`.mjs` runtime into `public/ort/` at `postinstall`; both directories are regenerable. onnxruntime-web's threaded WASM needs the cross-origin isolation headers set in `server.mjs` (`SharedArrayBuffer`); preserve them unless verified unnecessary. Do not bump `onnxruntime-web` without re-running the real wake path — the ORT runtime filenames it dynamically imports change between versions.
 
 ## Engineering Standards
 

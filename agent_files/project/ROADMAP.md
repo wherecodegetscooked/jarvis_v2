@@ -18,7 +18,7 @@ A simple, magical moment: say “Hey Jarvis” on a Mac and immediately have a f
 - [ ] Run the credentialed end-to-end path and record measurements.
 
 ## Phase 2 — “Hey Jarvis” loop
-- [x] Add local built-in “Jarvis” wake-word detection.
+- [x] Add local “Hey Jarvis” wake-word detection (openWakeWord in-browser; replaced Picovoice after its free tier ended — see ADR-008).
 - [x] Transition from idle to conversation without manual UI steps.
 - [x] Use WebRTC/server VAD interruption and automatic truncation.
 - Define sleep, timeout, and reactivation behavior.
