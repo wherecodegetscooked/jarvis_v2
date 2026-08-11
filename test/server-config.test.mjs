@@ -6,7 +6,7 @@ import { buildSessionConfig, publicConfig } from "../server-config.mjs";
 test("uses portable realtime defaults", () => {
   const config = buildSessionConfig({});
   assert.equal(config.model, "gpt-realtime-2.1");
-  assert.equal(config.audio.output.voice, "marin");
+  assert.equal(config.audio.output.voice, "cedar");
   assert.equal(config.audio.input.turn_detection.type, "semantic_vad");
 });
 

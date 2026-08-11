@@ -124,12 +124,20 @@ async function initializeWakeWord() {
     throw new Error("Wake-word assets are unavailable on the server");
   }
   if (!wakeEngine) {
+    // Schwelle und Debug per URL-Parameter tunebar (?wakeThreshold=0.35&wakeDebug),
+    // damit wir die Empfindlichkeit ohne Rebuild an echten Scores kalibrieren.
+    // Niedriger = empfindlicher (mehr Treffer, aber auch mehr Fehlausloesungen).
+    const params = new URLSearchParams(location.search);
+    const requested = Number(params.get("wakeThreshold"));
+    const detectionThreshold = Number.isFinite(requested) && requested > 0 && requested < 1 ? requested : 0.4;
     wakeEngine = new WakeWordEngine({
       keywords: [WAKE_KEYWORD],
       baseAssetUrl: "/models",
       ortWasmPath: "/ort/",
-      detectionThreshold: 0.5,
+      detectionThreshold,
+      debug: params.has("wakeDebug"),
     });
+    logTiming("wake_word.config", { detectionThreshold, debug: params.has("wakeDebug") });
     wakeEngine.on("detect", (detection) => {
       logTiming("wake_word.detected", { keyword: detection.keyword, score: Number(detection.score.toFixed(3)) });
       void activateConversation("wake_word");

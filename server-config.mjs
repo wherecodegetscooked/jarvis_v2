@@ -11,7 +11,7 @@ export function buildSessionConfig(env) {
         turn_detection: { type: "semantic_vad" },
       },
       output: {
-        voice: env.JARVIS_VOICE || "marin",
+        voice: env.JARVIS_VOICE || "cedar",
       },
     },
   };
